@@ -11,7 +11,7 @@ export const TopBar = () => {
             <Tabs.Tab value="MyShopping">My Shopping</Tabs.Tab>
             <Tabs.Tab value="MyAccount">My Account</Tabs.Tab>
             <Tabs.Tab value="Help">Help</Tabs.Tab>
-            <Tabs.Tab value="Categories">Categories </Tabs.Tab>
+            <Tabs.Tab value="Categories">Categories</Tabs.Tab>
             <Tabs.Tab value="About">About</Tabs.Tab>
             <Tabs.Tab value="Logout">Logout</Tabs.Tab>
           </Tabs.List>

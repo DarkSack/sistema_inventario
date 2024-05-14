@@ -82,6 +82,7 @@ export const Product = () => {
                   className="mt-4"
                   defaultValue={0}
                   allowNegative={false}
+                  min={1}
                 />
                 <Button color="blue" fullWidth mt="md" radius="md">
                   Comprar
