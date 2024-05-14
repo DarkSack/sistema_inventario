@@ -1,0 +1,61 @@
+export const TestData = [
+  {
+    productId: 6,
+    productName: "camiseta",
+    productDescription:
+      "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas 'Letraset', las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum",
+    productPrice: 15,
+    productStock: 30,
+    categoryId: 2,
+    providerId: 6,
+    productImage: "https://picsum.photos/200",
+    productEnable: true,
+  },
+  {
+    productId: 7,
+    productName: "pantalones",
+    productDescription:
+      "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas 'Letraset', las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum",
+    productPrice: 25,
+    productStock: 20,
+    categoryId: 3,
+    providerId: 7,
+    productImage: "https://picsum.photos/200",
+    productEnable: true,
+  },
+  {
+    productId: 8,
+    productName: "chaqueta",
+    productDescription:
+      "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas 'Letraset', las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum",
+    productPrice: 50,
+    productStock: 15,
+    categoryId: 4,
+    providerId: 8,
+    productImage: "https://picsum.photos/200",
+    productEnable: true,
+  },
+  {
+    productId: 9,
+    productName: "reloj",
+    productDescription: "de pulsera",
+    productPrice: 100,
+    productStock: 10,
+    categoryId: 5,
+    providerId: 9,
+    productImage: "https://picsum.photos/200",
+    productEnable: true,
+  },
+  {
+    productId: 10,
+    productName: "gafas de sol",
+    productDescription: "negras",
+    productPrice: 35,
+    productStock: 25,
+    categoryId: 6,
+    providerId: 10,
+    productImage: "https://picsum.photos/200",
+    productEnable: true,
+  },
+  // Puedes seguir añadiendo más productos aquí según sea necesario
+];
