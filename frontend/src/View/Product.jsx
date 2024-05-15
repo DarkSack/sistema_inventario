@@ -14,11 +14,16 @@ import axios from "axios";
 import config from "../config/config.json";
 import Swal from "sweetalert2";
 import { useDebounce } from "@uidotdev/usehooks";
+import { useDisclosure } from "@mantine/hooks";
+import { EditProductModal } from "./EditProductModal";
 
 export const Product = () => {
   const [productData, setProductData] = useState([]);
   const [search, setSearch] = useState("");
   const [errors, setErrors] = useState("");
+  const [opened, { open, close }] = useDisclosure(false);
+
+  const [selectedProductToEdit, setSelectedProductToEdit] = useState(null);
   const debouncedSearchTerm = useDebounce(search, 400);
   useEffect(() => {
     const fetchProductData = async () => {
@@ -71,6 +76,10 @@ export const Product = () => {
                 radius="md"
                 withBorder
                 className="mx-4 mt-4 text-wrap max-w-64"
+                onClick={() => {
+                  open();
+                  setSelectedProductToEdit(product);
+                }}
               >
                 <Card.Section>
                   <Image
@@ -106,6 +115,16 @@ export const Product = () => {
               </Card>
             ))}
         </Grid.Col>
+        <EditProductModal
+          opened={opened}
+          close={close}
+          transitionProps={{
+            transition: "fade",
+            duration: 250,
+            timingFunction: "linear",
+          }}
+          selectedProductToEdit={selectedProductToEdit}
+        />
       </Grid>
     </>
   );
