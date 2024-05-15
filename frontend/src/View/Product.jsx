@@ -7,29 +7,36 @@ import {
   Group,
   NumberInput,
   Grid,
+  TextInput,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "../config/config.json";
 import Swal from "sweetalert2";
+import { useDebounce } from "@uidotdev/usehooks";
 
 export const Product = () => {
   const [productData, setProductData] = useState([]);
+  const [search, setSearch] = useState("");
   const [errors, setErrors] = useState("");
+  const debouncedSearchTerm = useDebounce(search, 400);
   useEffect(() => {
-    const server =
-      window.location.hostname === "localhost"
-        ? config.local
-        : config.production;
-    axios
-      .get(`${server}/api/products`)
-      .then(function (res) {
+    const fetchProductData = async () => {
+      const server =
+        window.location.hostname === "localhost"
+          ? config.local
+          : config.production;
+      try {
+        const res = await axios.get(`${server}/api/products`, {
+          params: { q: debouncedSearchTerm },
+        });
         setProductData(res.data);
-      })
-      .catch(function (err) {
+      } catch (err) {
         setErrors(err);
-      });
-  }, []);
+      }
+    };
+    fetchProductData();
+  }, [debouncedSearchTerm]);
 
   useEffect(() => {
     const err = errors.messsage;
@@ -44,6 +51,15 @@ export const Product = () => {
 
   return (
     <>
+      <Grid>
+        <Grid.Col className="mt-3 ml-4" span={8}>
+          <TextInput
+            onChange={(event) => setSearch(event.currentTarget.value)}
+            radius={"lg"}
+            placeholder="Bucar..."
+          />
+        </Grid.Col>
+      </Grid>
       <Grid gutter={{ base: 5, xs: "md", md: "xl", xl: 50 }}>
         <Grid.Col span={12} className="flex flex-wrap mt-3">
           {productData &&

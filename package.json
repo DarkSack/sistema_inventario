@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "pnpm --recursive run dev",
+    "start": "pnpm --recursive run start",
+    "build": "pnpm --recursive run build",
+    "test": "pnpm --recursive run test"
   },
   "keywords": [],
   "author": "",
