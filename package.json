@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "pnpm --recursive run dev",
     "start": "pnpm --recursive run start",
+    "install": "pnpm --recursive install",
     "build": "pnpm --recursive run build",
     "test": "pnpm --recursive run test"
   },
