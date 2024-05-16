@@ -17,6 +17,9 @@ app.use(bodyParser.json());
 app.use(cors());
 
 //Create endpoints
+
+/* GET ENPOINTS */
+//Get products
 app.get("/api/products", async (req, res) => {
   const { q } = req.query;
   try {
@@ -57,6 +60,64 @@ app.get("/api/products", async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 });
+
+//Get categories
+app.get("/api/categories", async (req, res) => {
+  try {
+    const { data: categories, error: categoriesError } = await supabase
+      .from("categorias")
+      .select("*");
+
+    if (categoriesError) {
+      console.error(
+        "Error al obtener las categorías:",
+        categoriesError.message
+      );
+      return res.status(500).json({ error: "Error al obtener las categorías" });
+    }
+
+    const { data: products, error: productsError } = await supabase
+      .from("productos")
+      .select("*")
+      .eq("productEnable", true) // Filtra los productos habilitados
+      .gt("productStock", 0);
+
+    if (productsError) {
+      console.error("Error al obtener los productos:", productsError.message);
+      return res.status(500).json({ error: "Error al obtener los productos" });
+    }
+    const categoriesWithProductsAmount = categories.map((category) => {
+      const categoryProducts = products.filter(
+        (product) => product.categoryId === category.categoryId
+      );
+      return {
+        categoryId: category.categoryId,
+        categoryName: category.categoryName,
+        categoryDescription: category.categoryDescription,
+        productsAmount: categoryProducts.length,
+      };
+    });
+    return res.status(200).json(categoriesWithProductsAmount);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+//Get products per categories
+app.get("/api/getProductsPerCategorie", async (req, res) => {
+  const { categoryId } = req.query;
+  try {
+    const { data } = await supabase
+      .from("productos")
+      .select("*")
+      .eq("categoryId", categoryId);
+    return res.status(200).json(data);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+/* POST ENDPOINTS */
 //Create product
 app.post("/api/addProduct", async (req, res) => {
   let {
