@@ -2,25 +2,36 @@
   "name": "sistema_inventario",
   "version": "1.0.0",
   "description": "",
+  "packageManager": "npm@8.1.0",
   "main": "index.js",
   "scripts": {
-    "dev": "pnpm --recursive run dev",
-    "start": "pnpm --recursive run start",
-    "install": "pnpm --recursive install",
-    "build": "pnpm --recursive run build",
-    "test": "pnpm --recursive run test"
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "start": "apps/api/dist/main.js"
+  },
+  "turbo": {
+    "pipeline": {
+      "dev": {
+        "cache": false
+      },
+      "build": {
+        "dependsOn": [
+          "^build"
+        ],
+        "outputs": [
+          ".next/**",
+          "dist/**"
+        ]
+      }
+    }
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@supabase/supabase-js": "^2.43.1",
-    "backend": "^0.0.0",
-    "body-parser": "^1.20.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "supabase": "^1.165.0",
-    "ts-node": "^10.9.2"
+  "workspaces": [
+    "apps/*"
+  ],
+  "devDependencies": {
+    "turbo": "^1.13.3"
   }
 }
