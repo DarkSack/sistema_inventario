@@ -241,3 +241,4 @@ app.post("/api/createOrder", async (req, res) => {
 app.listen(port, () => {
   console.log(`El servidor está corriendo en http://localhost:${port}`);
 });
+module.exports = app;

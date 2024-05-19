@@ -53,9 +53,7 @@ export const Product = () => {
     }
   }, [errors]);
 console.log('====================================');
-console.log(import.meta.env.DEV === true
-  ? import.meta.env.VITE_LOCAL_URL
-  : import.meta.env.VITE_PROD_URL);
+console.log(import.meta.env);
 console.log('====================================');
   return (
     <>
