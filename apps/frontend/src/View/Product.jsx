@@ -11,11 +11,10 @@ import {
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import config from "../config/config.json";
 import Swal from "sweetalert2";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useDisclosure } from "@mantine/hooks";
-import { EditProductModal } from "./EditProductModal";
+import { EditProductModal } from "./Modals/EditProductModal";
 
 export const Product = () => {
   const [productData, setProductData] = useState([]);
@@ -28,9 +27,9 @@ export const Product = () => {
   useEffect(() => {
     const fetchProductData = async () => {
       const server =
-        window.location.hostname === "localhost"
-          ? config.local
-          : config.production;
+      import.meta.env.DEV === true
+          ? import.meta.env.VITE_LOCAL_URL
+          : import.meta.env.VITE_PROD_URL;
       try {
         const res = await axios.get(`${server}/api/products`, {
           params: { q: debouncedSearchTerm },
@@ -53,7 +52,11 @@ export const Product = () => {
       });
     }
   }, [errors]);
-
+console.log('====================================');
+console.log(import.meta.env.DEV === true
+  ? import.meta.env.VITE_LOCAL_URL
+  : import.meta.env.VITE_PROD_URL);
+console.log('====================================');
   return (
     <>
       <Grid>
