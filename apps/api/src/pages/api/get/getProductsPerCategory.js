@@ -1,7 +1,8 @@
 import { supabase } from "../../../SupabaseClient";
+import { allowCors } from "../cors";
 
 //Get products per categories
-export default async function handler(req, res) {
+async function handler(req, res) {
   const { categoryId } = req.query;
   try {
     const { data } = await supabase
@@ -13,3 +14,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: error.message });
   }
 }
+export default allowCors(handler);

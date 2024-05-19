@@ -54,7 +54,6 @@ export const Product = () => {
   }, [errors]);
 console.log('====================================');
 console.log(import.meta.env);
-console.log(process.env);
 console.log('====================================');
   return (
     <>
