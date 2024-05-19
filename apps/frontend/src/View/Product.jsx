@@ -52,9 +52,7 @@ export const Product = () => {
       });
     }
   }, [errors]);
-console.log('====================================');
-console.log(import.meta.env);
-console.log('====================================');
+
   return (
     <>
       <Grid>
