@@ -31,7 +31,7 @@ export const Product = () => {
           ? import.meta.env.VITE_LOCAL_URL
           : import.meta.env.VITE_PROD_URL;
       try {
-        const res = await axios.get(`${server}/api/products`, {
+        const res = await axios.get(`${server}/get/getProducts`, {
           params: { q: debouncedSearchTerm },
         });
         setProductData(res.data);
@@ -54,6 +54,7 @@ export const Product = () => {
   }, [errors]);
 console.log('====================================');
 console.log(import.meta.env);
+console.log(process.env);
 console.log('====================================');
   return (
     <>
