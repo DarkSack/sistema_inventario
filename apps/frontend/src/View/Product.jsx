@@ -15,8 +15,11 @@ import Swal from "sweetalert2";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useDisclosure } from "@mantine/hooks";
 import { EditProductModal } from "./Modals/EditProductModal";
+import { useUserAuth } from "../AuthContext";
 
 export const Product = () => {
+  const { signInWithDiscord, signInWithTwitch, signOut } =
+    useUserAuth();
   const [productData, setProductData] = useState([]);
   const [search, setSearch] = useState("");
   const [errors, setErrors] = useState("");
@@ -27,7 +30,7 @@ export const Product = () => {
   useEffect(() => {
     const fetchProductData = async () => {
       const server =
-      import.meta.env.DEV === true
+        import.meta.env.DEV === true
           ? import.meta.env.VITE_LOCAL_URL
           : import.meta.env.VITE_PROD_URL;
       try {
@@ -56,6 +59,9 @@ export const Product = () => {
   return (
     <>
       <Grid>
+        <Button onClick={signInWithTwitch}>Twitch</Button>
+        <Button onClick={signInWithDiscord}>Discord</Button>
+        <Button onClick={signOut}>Salir</Button>
         <Grid.Col className="mt-3 ml-4" span={8}>
           <TextInput
             onChange={(event) => setSearch(event.currentTarget.value)}
