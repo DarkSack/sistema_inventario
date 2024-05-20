@@ -37,6 +37,10 @@ export const Product = () => {
         const res = await axios.get(`${server}/get/getProducts`, {
           params: { q: debouncedSearchTerm },
         });
+        const cate = await axios.get(`${server}/get/getCategories`, {
+          params: { q: debouncedSearchTerm },
+        });
+        console.log("🚀 ~ fetchProductData ~ cate:", cate)
         setProductData(res.data);
       } catch (err) {
         setErrors(err);
