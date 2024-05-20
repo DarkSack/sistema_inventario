@@ -1,5 +1,5 @@
-import { supabase } from "../../../SupabaseClient";
-import { allowCors } from "../cors";
+import { supabase } from "../../SupabaseClient";
+import { allowCors } from "./cors";
 
 // Handler para manejar la solicitud
 async function handler(req, res) {

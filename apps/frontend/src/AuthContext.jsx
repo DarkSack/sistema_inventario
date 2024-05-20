@@ -14,7 +14,7 @@ export const AuthContextProvider = ({ children }) => {
 
   async function signInWithGoogle() {
     try {
-      const response = await axios.post(`${server}/utils/login`, {
+      const response = await axios.post(`${server}/login`, {
         provider: "google",
       });
       console.log("Inicio de sesión con Google exitoso:", response.data);
@@ -28,7 +28,7 @@ export const AuthContextProvider = ({ children }) => {
 
   async function signInWithDiscord() {
     try {
-      const response = await axios.post(`${server}/utils/login`, {
+      const response = await axios.post(`${server}/login`, {
         provider: "discord",
       });
       console.log("Inicio de sesión con Discord exitoso:", response.data);
@@ -42,7 +42,7 @@ export const AuthContextProvider = ({ children }) => {
 
   async function signInWithTwitch() {
     try {
-      const response = await axios.post(`${server}/utils/login`, {
+      const response = await axios.post(`${server}/login`, {
         provider: "twitch",
       });
       console.log("Inicio de sesión con Twitch exitoso:", response.data);
@@ -56,7 +56,7 @@ export const AuthContextProvider = ({ children }) => {
 
   async function signOut() {
     try {
-      const response = await axios.post(`${server}/utils/logout`);
+      const response = await axios.post(`${server}/logout`);
       console.log("Cierre de sesión exitoso:", response.data);
     } catch (error) {
       console.error(

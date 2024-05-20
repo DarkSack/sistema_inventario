@@ -10,12 +10,12 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useDisclosure } from "@mantine/hooks";
 import { EditProductModal } from "./Modals/EditProductModal";
 import { useUserAuth } from "../AuthContext";
+import axiosInstance from "../config/axiosInstance";
 
 export const Product = () => {
   const { signInWithDiscord, signInWithTwitch, signOut } =
@@ -30,14 +30,14 @@ export const Product = () => {
   useEffect(() => {
     const fetchProductData = async () => {
       const server =
-        import.meta.env.DEV === true
+        import.meta.env.DEV === false
           ? import.meta.env.VITE_LOCAL_URL
           : import.meta.env.VITE_PROD_URL;
       try {
-        const res = await axios.get(`${server}/get/getProducts`, {
+        const res = await axiosInstance.get(`${server}/get/getProducts`, {
           params: { q: debouncedSearchTerm },
         });
-        const cate = await axios.get(`${server}/get/getCategories`, {
+        const cate = await axiosInstance.get(`${server}/get/getCategories`, {
           params: { q: debouncedSearchTerm },
         });
         console.log("🚀 ~ fetchProductData ~ cate:", cate)
