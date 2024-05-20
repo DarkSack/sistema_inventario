@@ -1,6 +1,6 @@
 import { Menu, Text } from "@mantine/core";
 import { TwitchLogo, DiscordLogo, SignOut } from "phosphor-react";
-import { useUserAuth } from "../AuthContext";
+import { useUserAuth } from "../Context/AuthContext";
 
 export const LoginDropDown = () => {
   const isLog = localStorage.getItem("userId");
