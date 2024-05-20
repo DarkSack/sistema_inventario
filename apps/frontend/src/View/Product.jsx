@@ -38,7 +38,6 @@ export const Product = () => {
           params: { q: debouncedSearchTerm },
         });
 
-        console.log(sessionUser ?? "tacos al pastor");
         setProductData(res.data);
       } catch (err) {
         setErrors(err);
@@ -57,6 +56,7 @@ export const Product = () => {
       });
     }
   }, [errors]);
+  console.log(sessionUser ?? "tacos al pastor");
 
   return (
     <>
