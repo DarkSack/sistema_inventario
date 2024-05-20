@@ -1,68 +1,61 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "./supabase.config";
-import axios from "axios";
 const AuthContext = createContext();
 
 // eslint-disable-next-line react/prop-types
 export const AuthContextProvider = ({ children }) => {
-  const server =
-    import.meta.env.DEV === true
-      ? import.meta.env.VITE_LOCAL_URL
-      : import.meta.env.VITE_PROD_URL;
   const [user, setUser] = useState([]);
   const [sessionUser, setSessionUser] = useState([]);
 
   async function signInWithGoogle() {
     try {
-      const response = await axios.post(`${server}/login`, {
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
       });
-      console.log("Inicio de sesión con Google exitoso:", response.data);
+      localStorage.setItem("provider", "Google");
+      if (error) throw new Error("Error al iniciar sesión con Google");
+      return data;
     } catch (error) {
-      console.error(
-        "Error al iniciar sesión con Google:",
-        error.response ? error.response.data : error.message
-      );
+      console.error(error.message);
     }
   }
 
   async function signInWithDiscord() {
     try {
-      const response = await axios.post(`${server}/login`, {
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "discord",
       });
-      console.log("Inicio de sesión con Discord exitoso:", response.data);
+      localStorage.setItem("provider", "Discord");
+      if (error) throw new Error("Error al iniciar sesión con Discord");
+      return data;
     } catch (error) {
-      console.error(
-        "Error al iniciar sesión con Discord:",
-        error.response ? error.response.data : error.message
-      );
+      console.error(error.message);
     }
   }
 
   async function signInWithTwitch() {
     try {
-      const response = await axios.post(`${server}/login`, {
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "twitch",
       });
-      console.log("Inicio de sesión con Twitch exitoso:", response.data);
+      localStorage.setItem("provider", "Twitch");
+      if (error) throw new Error("Error al iniciar sesión con Twitch");
+      return data;
     } catch (error) {
-      console.error(
-        "Error al iniciar sesión con Twitch:",
-        error.response ? error.response.data : error.message
-      );
+      console.error(error.message);
     }
   }
 
   async function signOut() {
     try {
-      const response = await axios.post(`${server}/logout`);
-      console.log("Cierre de sesión exitoso:", response.data);
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.log(error);
+        throw new Error("Ha ocurrido un error al cerrar sesión");
+      }
+      localStorage.clear();
     } catch (error) {
-      console.error(
-        "Error al cerrar sesión:",
-        error.response ? error.response.data : error.message
-      );
+      console.error(error.message);
     }
   }
 
@@ -77,6 +70,9 @@ export const AuthContextProvider = ({ children }) => {
           console.log(session);
           console.log("====================================");
         } else {
+          console.log("====================================");
+          console.log(session);
+          console.log("====================================");
           setSessionUser(session);
           localStorage.setItem("connected", true);
           await supabase.from("users").upsert([
