@@ -18,7 +18,7 @@ import { useUserAuth } from "../AuthContext";
 import axiosInstance from "../config/axiosInstance";
 
 export const Product = () => {
-  const { signInWithDiscord, signInWithTwitch, signOut } =
+  const { signInWithDiscord, signInWithTwitch, signOut, sessionUser } =
     useUserAuth();
   const [productData, setProductData] = useState([]);
   const [search, setSearch] = useState("");
@@ -37,10 +37,8 @@ export const Product = () => {
         const res = await axiosInstance.get(`${server}/get/getProducts`, {
           params: { q: debouncedSearchTerm },
         });
-        const cate = await axiosInstance.get(`${server}/get/getCategories`, {
-          params: { q: debouncedSearchTerm },
-        });
-        console.log("🚀 ~ fetchProductData ~ cate:", cate)
+
+        console.log(sessionUser ?? "tacos al pastor");
         setProductData(res.data);
       } catch (err) {
         setErrors(err);
