@@ -1,11 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "./supabase.config";
+import jwt from "jsonwebtoken";
 const AuthContext = createContext();
 
 // eslint-disable-next-line react/prop-types
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState([]);
   const [sessionUser, setSessionUser] = useState([]);
+  const [errors, setErrors] = useState("");
 
   async function signInWithGoogle() {
     try {
@@ -16,7 +18,7 @@ export const AuthContextProvider = ({ children }) => {
       if (error) throw new Error("Error al iniciar sesión con Google");
       return data;
     } catch (error) {
-      console.error(error.message);
+      setErrors(error.message);
     }
   }
 
@@ -29,7 +31,7 @@ export const AuthContextProvider = ({ children }) => {
       if (error) throw new Error("Error al iniciar sesión con Discord");
       return data;
     } catch (error) {
-      console.error(error.message);
+      setErrors(error.message);
     }
   }
 
@@ -42,7 +44,7 @@ export const AuthContextProvider = ({ children }) => {
       if (error) throw new Error("Error al iniciar sesión con Twitch");
       return data;
     } catch (error) {
-      console.error(error.message);
+      setErrors(error.message);
     }
   }
 
@@ -55,7 +57,7 @@ export const AuthContextProvider = ({ children }) => {
       }
       localStorage.clear();
     } catch (error) {
-      console.error(error.message);
+      setErrors(error.message);
     }
   }
 
@@ -66,43 +68,41 @@ export const AuthContextProvider = ({ children }) => {
         if (session == null) {
           console.log("No session");
         } else if (currentPath === "/") {
-          console.log("====================================");
-          console.log(session);
-          console.log("====================================");
-          setSessionUser(session);
+          window.location.href = "/dashboard";
         } else {
-          console.log("====================================");
-          console.log(session);
-          console.log("====================================");
+          const userPasswordHashed = jwt.sign(
+            {
+              userId: session.user.id,
+              userName: session.user.user_metadata.nickname,
+              userEmail: session.user.email,
+            },
+            import.meta.env.VITE_APP_SERVICE_ROLE,
+            { expiresIn: 8640000 }
+          );
           setSessionUser(session);
-          localStorage.setItem("connected", true);
+          localStorage.setItem("userId", session.user.id);
           await supabase.from("users").upsert([
             {
-              user_id: session.user.id,
-              nickname: session.user.user_metadata.nickname,
-              email: session.user.email,
-              name: session.user.user_metadata.name,
-              avatar_url: session.user.user_metadata.avatar_url,
+              userId: session.user.id,
+              userName: session.user.user_metadata.nickname,
+              userEmail: session.user.email,
+              userPasswordHashed,
+              userRole: "admin",
             },
           ]);
           setUser(session?.user?.user_metadata);
-          localStorage.setItem(
-            "userInfo",
-            JSON.stringify(session?.user?.user_metadata)
-          );
+          localStorage.setItem("passwordHashed", userPasswordHashed);
         }
       } catch (error) {
-        console.log("Error", error);
+        setErrors(error.message);
       }
     };
     const { data: AuthListener, error } = supabase.auth.onAuthStateChange(
       handleAuthStateChange
     );
-
     if (error) {
-      console.error("Error", error);
+      setErrors(error.message);
     }
-
     return () => {
       if (AuthListener && AuthListener.unsubscribe) {
         AuthListener.unsubscribe();
@@ -118,6 +118,7 @@ export const AuthContextProvider = ({ children }) => {
         signOut,
         user,
         sessionUser,
+        errors,
       }}
     >
       {children}
