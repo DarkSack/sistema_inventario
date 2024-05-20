@@ -30,7 +30,7 @@ export const Product = () => {
   useEffect(() => {
     const fetchProductData = async () => {
       const server =
-        import.meta.env.DEV === false
+        import.meta.env.DEV === true
           ? import.meta.env.VITE_LOCAL_URL
           : import.meta.env.VITE_PROD_URL;
       try {
