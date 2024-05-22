@@ -1,14 +1,14 @@
 import { Grid, Tabs } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
 import { Product } from "./Product";
-import { useUserAuth } from "../../Context/AuthContext";
 import { useMediaQuery } from "@mantine/hooks";
 
 export const TopBar = () => {
+  const navigate = useNavigate();
   const isMobile = useMediaQuery("(max-width: 569px)")
     ? "vertical"
     : "horizontal";
 
-  const { signOut } = useUserAuth();
   return (
     <Grid className="pt-4">
       <Grid.Col span={12}>
@@ -20,7 +20,7 @@ export const TopBar = () => {
             <Tabs.Tab value="Help">Help</Tabs.Tab>
             <Tabs.Tab value="Categories">Categories</Tabs.Tab>
             <Tabs.Tab value="About">About</Tabs.Tab>
-            <Tabs.Tab className="cursor-pointer" onClick={signOut}>
+            <Tabs.Tab value="LogOut" className="cursor-pointer" onClick={navigate("/logout")}>
               Logout
             </Tabs.Tab>
           </Tabs.List>
