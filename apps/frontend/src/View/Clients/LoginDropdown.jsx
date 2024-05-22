@@ -1,10 +1,10 @@
 import { Menu, Text } from "@mantine/core";
 import { TwitchLogo, DiscordLogo, SignOut } from "phosphor-react";
-import { useUserAuth } from "../Context/AuthContext";
+import { useUserAuth } from "../../Context/AuthContext";
 
 export const LoginDropDown = () => {
   const isLog = localStorage.getItem("userId");
-  const { signInWithDiscord, signInWithTwitch, signOut } = useUserAuth();
+  const { signIn, signOut } = useUserAuth();
   const title = isLog ? "Cerrar sesión" : "Iniciar sesión";
   return (
     <Menu transitionProps={{ transition: "fade-down", duration: 100 }}>
@@ -18,10 +18,10 @@ export const LoginDropDown = () => {
           </Menu.Item>
         ) : (
           <>
-            <Menu.Item onClick={signInWithTwitch}>
+            <Menu.Item onClick={signIn("twitch")}>
               <TwitchLogo size={32} />
             </Menu.Item>
-            <Menu.Item onClick={signInWithDiscord}>
+            <Menu.Item onClick={signIn("discord")}>
               <DiscordLogo size={32} />
             </Menu.Item>
           </>

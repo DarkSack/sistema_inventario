@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "./supabase.config";
-import jwt from "jsonwebtoken";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabase.config";
 const AuthContext = createContext();
 
 // eslint-disable-next-line react/prop-types
@@ -8,46 +8,32 @@ export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState([]);
   const [sessionUser, setSessionUser] = useState([]);
   const [errors, setErrors] = useState("");
+  const navigate = useNavigate();
 
-  async function signInWithGoogle() {
+  const isAdmin = true;
+  async function signIn(provider, credentials) {
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-      });
-      localStorage.setItem("provider", "Google");
-      if (error) throw new Error("Error al iniciar sesión con Google");
+      let data, error;
+      if (provider === "withPassword") {
+        const { email, password } = credentials;
+        ({ user: data, error } = await supabase.auth.signIn({
+          email,
+          password,
+        }));
+      } else {
+        ({ data, error } = await supabase.auth.signInWithOAuth({ provider }));
+        localStorage.setItem("provider", provider);
+      }
+      if (error) {
+        throw new Error(
+          `Error al iniciar sesión con ${provider}: ${error.message}`
+        );
+      }
       return data;
     } catch (error) {
       setErrors(error.message);
     }
   }
-
-  async function signInWithDiscord() {
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "discord",
-      });
-      localStorage.setItem("provider", "Discord");
-      if (error) throw new Error("Error al iniciar sesión con Discord");
-      return data;
-    } catch (error) {
-      setErrors(error.message);
-    }
-  }
-
-  async function signInWithTwitch() {
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "twitch",
-      });
-      localStorage.setItem("provider", "Twitch");
-      if (error) throw new Error("Error al iniciar sesión con Twitch");
-      return data;
-    } catch (error) {
-      setErrors(error.message);
-    }
-  }
-
   async function signOut() {
     try {
       const { error } = await supabase.auth.signOut();
@@ -64,21 +50,10 @@ export const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     const handleAuthStateChange = async (e, session) => {
       try {
-        const currentPath = window.location.pathname;
-        if (session == null) {
-          console.log("No session");
-        } else if (currentPath === "/") {
-          window.location.href = "/dashboard";
+        if (!session) {
+          navigate("/");
         } else {
-          const userPasswordHashed = jwt.sign(
-            {
-              userId: session.user.id,
-              userName: session.user.user_metadata.nickname,
-              userEmail: session.user.email,
-            },
-            import.meta.env.VITE_APP_SERVICE_ROLE,
-            { expiresIn: 8640000 }
-          );
+          const userRole = isAdmin ? "admin" : "user";
           setSessionUser(session);
           localStorage.setItem("userId", session.user.id);
           await supabase.from("users").upsert([
@@ -86,12 +61,11 @@ export const AuthContextProvider = ({ children }) => {
               userId: session.user.id,
               userName: session.user.user_metadata.nickname,
               userEmail: session.user.email,
-              userPasswordHashed,
-              userRole: "admin",
+              userRole,
             },
           ]);
-          setUser(session?.user?.user_metadata);
-          localStorage.setItem("passwordHashed", userPasswordHashed);
+          setUser(session.user.user_metadata);
+          navigate(isAdmin ? "/dashboard" : "/");
         }
       } catch (error) {
         setErrors(error.message);
@@ -108,13 +82,11 @@ export const AuthContextProvider = ({ children }) => {
         AuthListener.unsubscribe();
       }
     };
-  }, []);
+  }, [isAdmin, navigate]);
   return (
     <AuthContext.Provider
       value={{
-        signInWithGoogle,
-        signInWithDiscord,
-        signInWithTwitch,
+        signIn,
         signOut,
         user,
         sessionUser,

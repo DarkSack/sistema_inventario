@@ -1,13 +1,16 @@
 import "./App.css";
 import "@mantine/core/styles.css";
-import { TopBar } from "./View/TopBar";
-import { AuthContextProvider } from "./AuthContext";
+import { AuthContextProvider } from "./Context/AuthContext";
+import { RouteNavigation } from "./Context/Routes";
+import { BrowserRouter as Router } from "react-router-dom";
 
 function App() {
   return (
-    <AuthContextProvider>
-      <TopBar />
-    </AuthContextProvider>
+    <Router>
+      <AuthContextProvider>
+        <RouteNavigation />
+      </AuthContextProvider>
+    </Router>
   );
 }
 

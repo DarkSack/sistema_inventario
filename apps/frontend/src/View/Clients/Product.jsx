@@ -13,11 +13,10 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useDisclosure } from "@mantine/hooks";
-import { EditProductModal } from "./Modals/EditProductModal";
-import axiosInstance from "../config/axiosInstance";
+import { EditProductModal } from "../Modals/EditProductModal";
+import axiosInstance from "../../config/axiosInstance";
 
 export const Product = () => {
-
   const [productData, setProductData] = useState([]);
   const [search, setSearch] = useState("");
   const [errors, setErrors] = useState("");
