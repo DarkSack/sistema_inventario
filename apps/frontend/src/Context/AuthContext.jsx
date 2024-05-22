@@ -34,7 +34,8 @@ export const AuthContextProvider = ({ children }) => {
       setErrors(error.message);
     }
   }
-  async function signOut() {
+  async function signOut(e) {
+    e.preventDefault();
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
@@ -51,7 +52,7 @@ export const AuthContextProvider = ({ children }) => {
     const handleAuthStateChange = async (e, session) => {
       try {
         if (!session) {
-          navigate("/");
+          navigate("/login");
         } else {
           const userRole = isAdmin ? "admin" : "user";
           setSessionUser(session);
