@@ -78,7 +78,7 @@ export const Product = () => {
               >
                 <Card.Section>
                   <Image
-                    src={product.productImage}
+                    src={product.productImage ?? "https://picsum.photos/160"}
                     height={160}
                     alt={product.productName}
                   />

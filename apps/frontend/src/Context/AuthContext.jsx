@@ -22,7 +22,6 @@ export const AuthContextProvider = ({ children }) => {
         }));
       } else {
         ({ data, error } = await supabase.auth.signInWithOAuth({ provider }));
-        localStorage.setItem("provider", provider);
       }
       if (error) {
         throw new Error(
@@ -34,12 +33,10 @@ export const AuthContextProvider = ({ children }) => {
       setErrors(error.message);
     }
   }
-  async function signOut(e) {
-    e.preventDefault();
+  async function signOut() {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
-        console.log(error);
         throw new Error("Ha ocurrido un error al cerrar sesión");
       }
       localStorage.clear();
