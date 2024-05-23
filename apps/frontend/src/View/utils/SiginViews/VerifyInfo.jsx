@@ -7,11 +7,11 @@ export const VerifyInfoToAccount = () => {
     ...formData.step1,
     user: {
       ...formData.step1.user,
-      ...formData.step2.user
-    }
+      ...formData.step2.user,
+    },
   };
-  
-  console.log("🚀 ~ VerifyInfoToAccount ~ formData:", unifiedObject)
+
+  console.log("🚀 ~ VerifyInfoToAccount ~ formData:", unifiedObject);
 
   return (
     <Grid>

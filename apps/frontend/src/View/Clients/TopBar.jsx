@@ -1,8 +1,10 @@
-import { Grid, Tabs } from "@mantine/core";
-import { Product } from "./Product";
+import { Grid, Tabs, Text } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
+import { useUserAuth } from "../../Context/AuthContext";
+import { Product } from "./Product";
 
 export const TopBar = () => {
+  const { signOut } = useUserAuth();
   const isMobile = useMediaQuery("(max-width: 569px)")
     ? "vertical"
     : "horizontal";
@@ -19,7 +21,7 @@ export const TopBar = () => {
             <Tabs.Tab value="Categories">Categories</Tabs.Tab>
             <Tabs.Tab value="About">About</Tabs.Tab>
             <Tabs.Tab value="LogOut" className="cursor-pointer">
-              Logout
+              <Text onClick={() => signOut}>Logout</Text>
             </Tabs.Tab>
           </Tabs.List>
           <Tabs.Panel value="Home">{Product()}</Tabs.Panel>

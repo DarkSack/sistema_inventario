@@ -51,8 +51,13 @@ export const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     const handleAuthStateChange = async (e, session) => {
       try {
+        const currentPath = window.location.pathname;
         if (!session) {
-          navigate("/login");
+          if (currentPath === "/signin" || currentPath === "/login") {
+            navigate(currentPath);
+          } else {
+            navigate("/signin");
+          }
         } else {
           const userRole = isAdmin ? "admin" : "user";
           setSessionUser(session);
@@ -66,7 +71,7 @@ export const AuthContextProvider = ({ children }) => {
             },
           ]);
           setUser(session.user.user_metadata);
-          navigate(isAdmin ? "/dashboard" : "/");
+          navigate(isAdmin ? "/" : "/");
         }
       } catch (error) {
         setErrors(error.message);

@@ -15,7 +15,7 @@ export const RouteNavigation = () => {
             <SignInView />
           </FormProvider>
         }
-      />{" "}
+      />
       {/** Signin view*/}
       <Route path="/" element={<TopBar />} /> {/** User view*/}
       <Route path="/dashboard" /> {/** Admin view*/}

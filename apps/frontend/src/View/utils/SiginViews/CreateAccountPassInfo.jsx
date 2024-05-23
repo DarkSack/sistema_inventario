@@ -18,7 +18,6 @@ export const CreateAccountView = (props) => {
   const { signInWithDiscord, signInWithTwitch, signInWithGoogle } =
     useUserAuth();
   const { updateFormData, formData } = useFormContext();
-
   const avatarData = [
     {
       icon: <TwitchLogo size={32} />,
@@ -52,12 +51,15 @@ export const CreateAccountView = (props) => {
         value === true ? null : "You must accept terms and conditions",
     },
   });
-
+  // const {
+  //   terms,
+  //   user: { email, password },
+  // } = form.values;
+  // const isAllow = terms && email && password;
   const handleSubmit = (values) => {
     updateFormData("step1", values);
     props.nextStep();
   };
-
   return (
     <Grid className="mt-20">
       <Grid.Col span={12}>
@@ -85,13 +87,6 @@ export const CreateAccountView = (props) => {
               key={form.key("terms")}
               {...form.getInputProps("terms", { type: "checkbox" })}
             />
-            <Button
-              onClick={props.prevStep}
-              className="mt-5 mb-5 ml-10 mr-10"
-              type="submit"
-            >
-              Regresar
-            </Button>
             <Button className="mt-5 mb-5" type="submit">
               Aceptar
             </Button>

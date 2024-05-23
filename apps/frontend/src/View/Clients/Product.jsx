@@ -14,7 +14,7 @@ import Swal from "sweetalert2";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useDisclosure } from "@mantine/hooks";
 import { EditProductModal } from "../Modals/EditProductModal";
-import axiosInstance from "../../config/axiosInstance";
+import api from "../../config/AxiosAdapter";
 
 export const Product = () => {
   const [productData, setProductData] = useState([]);
@@ -26,15 +26,10 @@ export const Product = () => {
   const debouncedSearchTerm = useDebounce(search, 400);
   useEffect(() => {
     const fetchProductData = async () => {
-      const server =
-        import.meta.env.DEV === true
-          ? import.meta.env.VITE_LOCAL_URL
-          : import.meta.env.VITE_PROD_URL;
       try {
-        const res = await axiosInstance.get(`${server}/get/getProducts`, {
+        const res = await api.get("/get/getProducts", {
           params: { q: debouncedSearchTerm },
         });
-
         setProductData(res.data);
       } catch (err) {
         setErrors(err);

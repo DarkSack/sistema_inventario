@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     productEnable,
     stock,
   } = req.body;
-  console.log(req.body);
+
   try {
     /**
      * Validación de campos requeridos

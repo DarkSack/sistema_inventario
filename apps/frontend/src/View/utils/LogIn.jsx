@@ -16,15 +16,15 @@ export const LogInView = () => {
   const avatarData = [
     {
       icon: <TwitchLogo size={32} />,
-      onClick: signIn("twitch"),
+      onClick: () => signIn("twitch"),
     },
     {
       icon: <DiscordLogo size={32} />,
-      onClick: signIn("discord"),
+      onClick: () => signIn("discord"),
     },
     {
       icon: <GoogleLogo size={32} />,
-      onClick: signIn("google"),
+      onClick: () => signIn("google"),
     },
   ];
   const form = useForm({

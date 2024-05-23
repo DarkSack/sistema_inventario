@@ -3,9 +3,16 @@ import { useState } from "react";
 import { CreateAccountView } from "./SiginViews/CreateAccountPassInfo";
 import { CreateAccountPersonalInfoView } from "./SiginViews/CreateAccountPersonalInfo";
 import { VerifyInfoToAccount } from "./SiginViews/VerifyInfo";
+import { useFormContext } from "../../Context/FormContext";
 // import supabase from "./supabaseClient";
 
 export const SignInView = () => {
+  const { formData } = useFormContext();
+  // const {
+  //   terms,
+  //   user: { email, password },
+  // } = formData;
+  // const isAllow = terms && email && password;
   const [active, setActive] = useState(0);
   const nextStep = () =>
     setActive((current) => (current < 3 ? current + 1 : current));
@@ -14,8 +21,8 @@ export const SignInView = () => {
   return (
     <div>
       <Stepper active={active} onStepClick={setActive}>
-        <Stepper.Step label="First step" description="Create an account">
-          <CreateAccountView prevStep={prevStep} nextStep={nextStep} />
+        <Stepper.Step disabled={formData} label="First step" description="Create an account">
+          <CreateAccountView nextStep={nextStep} />
         </Stepper.Step>
         <Stepper.Step label="Second step" description="Verify email">
           <CreateAccountPersonalInfoView
