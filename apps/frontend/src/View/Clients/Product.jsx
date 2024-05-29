@@ -15,8 +15,10 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { useDisclosure } from "@mantine/hooks";
 import { EditProductModal } from "../Modals/EditProductModal";
 import api from "../../config/AxiosAdapter";
+import { useUserAuth } from "../../Context/AuthContext";
 
 export const Product = () => {
+  const { signIn } = useUserAuth();
   const [productData, setProductData] = useState([]);
   const [search, setSearch] = useState("");
   const [errors, setErrors] = useState("");
@@ -119,6 +121,7 @@ export const Product = () => {
           }}
           selectedProductToEdit={selectedProductToEdit}
         />
+        <Button onClick={() => signIn("twitch")}>Iniciar</Button>
       </Grid>
     </>
   );
