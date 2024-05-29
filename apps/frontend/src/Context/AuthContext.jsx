@@ -18,11 +18,13 @@ export const AuthContextProvider = ({ children }) => {
    * @returns {object}
    */
   async function signIn(provider) {
-    api.get("/get/getProducts", {
-      params: {
-        provider: provider,
-      },
-    });
+    try {
+      await api.post("/api/auth/login", { provider });
+      // Supabase redirigirá automáticamente al usuario al proveedor de autenticación
+    } catch (error) {
+      console.error(error);
+      throw new Error("Error al iniciar sesión con el proveedor");
+    }
   }
 
   /**
@@ -65,11 +67,7 @@ export const AuthContextProvider = ({ children }) => {
         throw new Error("Usuario o contraseña incorrecta");
       }
       // Iniciar sesión con Supabase
-      const {
-        user: authUser,
-        session,
-        error: authError,
-      } = await supabase.auth.signIn({
+      const { user: authUser, error: authError } = await supabase.auth.signIn({
         email,
         password,
       });
