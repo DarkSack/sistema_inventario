@@ -1,5 +1,5 @@
 import { supabase } from "../../../SupabaseClient";
-
+import allowCors from "../cors";
 async function handler(req, res) {
   if (req.method === "POST") {
     const { provider } = req.body;
@@ -27,4 +27,4 @@ async function handler(req, res) {
   }
 }
 
-export default handler;
+export default allowCors(handler);
