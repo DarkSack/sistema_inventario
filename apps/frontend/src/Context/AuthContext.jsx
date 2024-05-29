@@ -19,7 +19,7 @@ export const AuthContextProvider = ({ children }) => {
    */
   async function signIn(provider) {
     try {
-      await api.post("/api/auth/login", { provider });
+      await api.post("/auth/login", { provider });
       // Supabase redirigirá automáticamente al usuario al proveedor de autenticación
     } catch (error) {
       console.error(error);
