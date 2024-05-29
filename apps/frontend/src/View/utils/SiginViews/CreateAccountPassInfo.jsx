@@ -15,21 +15,21 @@ import { useFormContext } from "../../../Context/FormContext";
 import PropTypes from "prop-types";
 
 export const CreateAccountView = (props) => {
-  const { signInWithDiscord, signInWithTwitch, signInWithGoogle } =
-    useUserAuth();
+  const { signIn } = useUserAuth();
+  const credentials = { email: "johanjafet@gmail.com", password: "Sack123" };
   const { updateFormData, formData } = useFormContext();
   const avatarData = [
     {
       icon: <TwitchLogo size={32} />,
-      onClick: signInWithTwitch,
+      onClick: () => signIn("twitch"),
     },
     {
       icon: <DiscordLogo size={32} />,
-      onClick: signInWithDiscord,
+      onClick: () => signIn("discord"),
     },
     {
       icon: <GoogleLogo size={32} />,
-      onClick: signInWithGoogle,
+      onClick: () => signIn("google"),
     },
   ];
 
@@ -51,11 +51,7 @@ export const CreateAccountView = (props) => {
         value === true ? null : "You must accept terms and conditions",
     },
   });
-  // const {
-  //   terms,
-  //   user: { email, password },
-  // } = form.values;
-  // const isAllow = terms && email && password;
+
   const handleSubmit = (values) => {
     updateFormData("step1", values);
     props.nextStep();
@@ -87,7 +83,10 @@ export const CreateAccountView = (props) => {
               key={form.key("terms")}
               {...form.getInputProps("terms", { type: "checkbox" })}
             />
-            <Button className="mt-5 mb-5" type="submit">
+            <Button
+              className="mt-5 mb-5"
+              onClick={() => signIn("withPassword", credentials)}
+            >
               Aceptar
             </Button>
           </form>

@@ -15,13 +15,13 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { useDisclosure } from "@mantine/hooks";
 import { EditProductModal } from "../Modals/EditProductModal";
 import api from "../../config/AxiosAdapter";
-
+import { useUserAuth } from "../../Context/AuthContext";
 export const Product = () => {
   const [productData, setProductData] = useState([]);
+  const { sessionUser } = useUserAuth();
   const [search, setSearch] = useState("");
   const [errors, setErrors] = useState("");
   const [opened, { open, close }] = useDisclosure(false);
-
   const [selectedProductToEdit, setSelectedProductToEdit] = useState(null);
   const debouncedSearchTerm = useDebounce(search, 400);
   useEffect(() => {

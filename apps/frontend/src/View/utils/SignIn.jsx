@@ -4,15 +4,9 @@ import { CreateAccountView } from "./SiginViews/CreateAccountPassInfo";
 import { CreateAccountPersonalInfoView } from "./SiginViews/CreateAccountPersonalInfo";
 import { VerifyInfoToAccount } from "./SiginViews/VerifyInfo";
 import { useFormContext } from "../../Context/FormContext";
-// import supabase from "./supabaseClient";
 
 export const SignInView = () => {
   const { formData } = useFormContext();
-  // const {
-  //   terms,
-  //   user: { email, password },
-  // } = formData;
-  // const isAllow = terms && email && password;
   const [active, setActive] = useState(0);
   const nextStep = () =>
     setActive((current) => (current < 3 ? current + 1 : current));
@@ -31,7 +25,7 @@ export const SignInView = () => {
           />
         </Stepper.Step>
         <Stepper.Step label="Final step" description="Get full access">
-          <VerifyInfoToAccount prevStep={prevStep} nextStep={nextStep} />
+          <VerifyInfoToAccount prevStep={prevStep}/>
         </Stepper.Step>
         <Stepper.Completed>
           Completed, click back button to get to previous step

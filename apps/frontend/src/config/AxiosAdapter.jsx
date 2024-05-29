@@ -24,7 +24,7 @@ const server = import.meta.env.VITE_PROD_URL;
 // Crear una instancia de Axios con caché
 const api = axios.create({
   adapter: forageCache.adapter,
-  baseURL: server, // Asegúrate de que `server` sea un string
+  baseURL: "http://localhost:3000",
   timeout: 1000,
   headers: {
     "Content-Type": "application/json",

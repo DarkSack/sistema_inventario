@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabase.config";
+import bcrypt from "bcryptjs";
 const AuthContext = createContext();
-
+import api from "../config/AxiosAdapter";
 // eslint-disable-next-line react/prop-types
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState([]);
@@ -10,29 +11,23 @@ export const AuthContextProvider = ({ children }) => {
   const [errors, setErrors] = useState("");
   const navigate = useNavigate();
 
-  const isAdmin = true;
-  async function signIn(provider, credentials) {
-    try {
-      let data, error;
-      if (provider === "withPassword") {
-        const { email, password } = credentials;
-        ({ user: data, error } = await supabase.auth.signIn({
-          email,
-          password,
-        }));
-      } else {
-        ({ data, error } = await supabase.auth.signInWithOAuth({ provider }));
-      }
-      if (error) {
-        throw new Error(
-          `Error al iniciar sesión con ${provider}: ${error.message}`
-        );
-      }
-      return data;
-    } catch (error) {
-      setErrors(error.message);
-    }
+  /**
+   * purpose: Sigin a new user
+   * @param {string} provider
+   * @param {object} credentials
+   * @returns {object}
+   */
+  async function signIn(provider) {
+    api.get("/get/getProducts", {
+      params: {
+        provider: provider,
+      },
+    });
   }
+
+  /**
+   * Function to logout
+   */
   async function signOut() {
     try {
       const { error } = await supabase.auth.signOut();
@@ -45,8 +40,49 @@ export const AuthContextProvider = ({ children }) => {
     }
   }
 
+  /**
+   *
+   * purpose: Login in your account
+   * @param {string} email
+   * @param {string} password
+   * @returns
+   */
+  async function login(email, password) {
+    try {
+      // Obtener el usuario desde la base de datos por correo electrónico
+      const { data: user, error } = await supabase
+        .from("users")
+        .select("userPassHash") // Seleccionar el campo donde se almacena el hash de la contraseña
+        .eq("userEmail", email)
+        .single();
+
+      if (error) {
+        throw error;
+      }
+      // Comparar la contraseña ingresada con el hash almacenado
+      const isPasswordValid = bcrypt.compareSync(password, user.userPassHash);
+      if (!isPasswordValid) {
+        throw new Error("Usuario o contraseña incorrecta");
+      }
+      // Iniciar sesión con Supabase
+      const {
+        user: authUser,
+        session,
+        error: authError,
+      } = await supabase.auth.signIn({
+        email,
+        password,
+      });
+      if (authError) {
+        throw authError;
+      }
+      return authUser;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
   useEffect(() => {
-    const handleAuthStateChange = async (e, session) => {
+    const handleAuthStateChange = async (event, session) => {
       try {
         const currentPath = window.location.pathname;
         if (!session) {
@@ -56,19 +92,37 @@ export const AuthContextProvider = ({ children }) => {
             navigate("/signin");
           }
         } else {
-          const userRole = isAdmin ? "admin" : "user";
+          // Usar memoización para evitar solicitudes duplicadas
+          const cachedUser = localStorage.getItem("userRole");
+          let userRole;
+
+          if (cachedUser) {
+            userRole = JSON.parse(cachedUser);
+          } else {
+            const { data, error } = await supabase
+              .from("users")
+              .select("userRole")
+              .eq("userEmail", session.user.email)
+              .single();
+            if (error) throw error;
+            userRole = data;
+            localStorage.setItem("userRole", JSON.stringify(userRole));
+          }
+          const isAdmin = userRole && userRole.userRole === "admin";
           setSessionUser(session);
           localStorage.setItem("userId", session.user.id);
-          await supabase.from("users").upsert([
-            {
-              userId: session.user.id,
+          // Evitar solicitudes de upsert duplicadas
+          if (!localStorage.getItem("userInserted")) {
+            const { error: upsertError } = await supabase.from("users").upsert({
               userName: session.user.user_metadata.nickname,
               userEmail: session.user.email,
-              userRole,
-            },
-          ]);
+              userRole: "user",
+            });
+            if (upsertError) throw upsertError;
+            localStorage.setItem("userInserted", "true");
+          }
           setUser(session.user.user_metadata);
-          navigate(isAdmin ? "/" : "/");
+          navigate(isAdmin ? "/dashboard" : "/");
         }
       } catch (error) {
         setErrors(error.message);
@@ -80,17 +134,20 @@ export const AuthContextProvider = ({ children }) => {
     if (error) {
       setErrors(error.message);
     }
+
     return () => {
       if (AuthListener && AuthListener.unsubscribe) {
         AuthListener.unsubscribe();
       }
     };
-  }, [isAdmin, navigate]);
+  }, [navigate]);
+
   return (
     <AuthContext.Provider
       value={{
         signIn,
         signOut,
+        login,
         user,
         sessionUser,
         errors,

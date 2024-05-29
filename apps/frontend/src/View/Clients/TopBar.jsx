@@ -1,4 +1,4 @@
-import { Grid, Tabs, Text } from "@mantine/core";
+import { Button, Grid, Tabs, Text } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useUserAuth } from "../../Context/AuthContext";
 import { Product } from "./Product";
@@ -26,6 +26,7 @@ export const TopBar = () => {
           </Tabs.List>
           <Tabs.Panel value="Home">{Product()}</Tabs.Panel>
         </Tabs>
+        <Button onClick={signOut}>Cerrar</Button>
       </Grid.Col>
     </Grid>
   );
