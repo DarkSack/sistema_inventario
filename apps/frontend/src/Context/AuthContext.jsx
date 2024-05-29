@@ -120,7 +120,7 @@ export const AuthContextProvider = ({ children }) => {
             localStorage.setItem("userInserted", "true");
           }
           setUser(session.user.user_metadata);
-          navigate(isAdmin ? "/dashboard" : "/");
+          navigate(isAdmin ? "/signin" : "/signin");
         }
       } catch (error) {
         setErrors(error.message);
