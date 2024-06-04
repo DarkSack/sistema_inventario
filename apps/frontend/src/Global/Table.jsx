@@ -5,6 +5,9 @@ export default function Table(props) {
     <div style={{ height: 400, width: "100%" }}>
       <DataGrid
         rows={props.rows}
+        onRowSelectionModelChange={(newSelection) =>
+          props.onSelectionChange(newSelection)
+        }
         columns={props.columns}
         initialState={{
           pagination: {
@@ -14,8 +17,8 @@ export default function Table(props) {
             },
           },
         }}
-        pageSizeOptions={[5, 10]}
-        checkboxSelection
+        pageSizeOptions={props.pageSizeOptions}
+        checkboxSelection = {props.checkboxSelection}
       />
     </div>
   );
@@ -26,4 +29,7 @@ Table.propTypes = {
   columns: PropTypes.array,
   initialPage: PropTypes.number,
   pageSize: PropTypes.number,
+  onSelectionChange: PropTypes.func,
+  checkboxSelection: PropTypes.bool,
+  pageSizeOptions:  PropTypes.array
 };

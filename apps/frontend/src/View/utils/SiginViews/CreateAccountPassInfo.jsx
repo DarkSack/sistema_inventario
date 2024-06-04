@@ -10,12 +10,12 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { TwitchLogo, DiscordLogo, GoogleLogo } from "phosphor-react";
-import { useUserAuth } from "../../../Context/AuthContext";
+import {useAuth} from "../../../Context/AuthContext";
 import { useFormContext } from "../../../Context/FormContext";
 import PropTypes from "prop-types";
 
 export const CreateAccountView = (props) => {
-  const { signIn } = useUserAuth();
+  const { signIn } = useAuth();
   const credentials = { email: "johanjafet@gmail.com", password: "Sack123" };
   const { updateFormData, formData } = useFormContext();
   const avatarData = [

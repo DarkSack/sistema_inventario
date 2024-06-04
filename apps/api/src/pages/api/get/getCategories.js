@@ -1,45 +1,19 @@
-import {supabase } from "../../../SupabaseClient"
+import { supabase } from "../../../SupabaseClient";
 import { allowCors } from "../cors";
 
-//Get categories
+// Get categories
 async function handler(req, res) {
   try {
-    const { data: categories, error: categoriesError } = await supabase
-      .from("categorias")
-      .select("*");
+    // Obtener categorías y productos en una sola consulta
+    const { data: categoriesWithProducts, error } = await supabase
+      .rpc('get_categories_with_products');
 
-    if (categoriesError) {
-      console.error(
-        "Error al obtener las categorías:",
-        categoriesError.message
-      );
-      return res.status(500).json({ error: "Error al obtener las categorías" });
+    if (error) {
+      return res.status(500).json({ error: "Error al obtener los datos" });
     }
-
-    const { data: products, error: productsError } = await supabase
-      .from("productos")
-      .select("*")
-      .eq("productEnable", true) // Filtra los productos habilitados
-      .gt("productStock", 0);
-
-    if (productsError) {
-      console.error("Error al obtener los productos:", productsError.message);
-      return res.status(500).json({ error: "Error al obtener los productos" });
-    }
-    const categoriesWithProductsAmount = categories.map((category) => {
-      const categoryProducts = products.filter(
-        (product) => product.categoryId === category.categoryId
-      );
-      return {
-        categoryId: category.categoryId,
-        categoryName: category.categoryName,
-        categoryDescription: category.categoryDescription,
-        productsAmount: categoryProducts.length,
-      };
-    });
-    return res.status(200).json(categoriesWithProductsAmount);
+    return res.status(200).json(categoriesWithProducts);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
 }
 export default allowCors(handler);

@@ -1,16 +1,44 @@
 import { supabase } from "../../../SupabaseClient";
 import { allowCors } from "../cors";
+
 //Get products
 async function handler(req, res) {
   const { q } = req.query;
   try {
     // Realiza la consulta a la tabla de productos
-    const { data: products } = await supabase
+    const { data: products, error } = await supabase
       .from("productos")
-      .select(`*`)
-      .eq("productEnable", true) // Filtra los productos habilitados
-      .gt("productStock", 0); // Filtra las existencias mayores a 0
-    let dataResponse = products;
+      .select(
+        `productId,
+         productName,
+         productDescription,
+         productPrice,
+         productStock,
+         category:categorias(
+           categoryName
+         ),
+         provider:providers(
+          providerName
+         )
+         `
+      );
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    // Estructura los productos correctamente
+    const dataProducts = products.map((product) => ({
+      id: product.productId,
+      productName: product.productName,
+      productDescription: product.productDescription,
+      productPrice: product.productPrice,
+      productStock: product.productStock,
+      categoryName: product?.category?.categoryName,
+      providerName: product?.provider?.providerName,
+    }));
+
+    let dataResponse = dataProducts;
 
     // Filtra los datos según la consulta
     if (q) {
@@ -21,7 +49,7 @@ async function handler(req, res) {
       }
 
       const search = q.toString().toLowerCase();
-      const filterData = products.filter((row) => {
+      const filterData = dataProducts.filter((row) => {
         return Object.values(row).some((value) => {
           // Verifica si el valor no es nulo ni indefinido
           if (value !== null && value !== undefined) {
@@ -41,4 +69,5 @@ async function handler(req, res) {
     return res.status(500).json({ error: error.message });
   }
 }
+
 export default allowCors(handler);

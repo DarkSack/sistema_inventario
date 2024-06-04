@@ -1,9 +1,9 @@
 import { Grid, Tabs, Text } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { Product } from "./Product";
+import { AdminProductsView } from "../Admin/Products";
 import { LogOutView } from "./LogoutView";
 
-export const TopBar = () => {
+export const AdminBar = () => {
   const isMobile = useMediaQuery("(max-width: 569px)")
     ? "vertical"
     : "horizontal";
@@ -23,7 +23,7 @@ export const TopBar = () => {
               <Text>Logout</Text>
             </Tabs.Tab>
           </Tabs.List>
-          <Tabs.Panel value="Home">{Product()}</Tabs.Panel>
+          <Tabs.Panel value="Home">{AdminProductsView()}</Tabs.Panel>
           <Tabs.Panel value="LogOut">{LogOutView()}</Tabs.Panel>
         </Tabs>
       </Grid.Col>

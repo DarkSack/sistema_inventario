@@ -1,161 +1,124 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabase.config";
-import bcrypt from "bcryptjs";
-const AuthContext = createContext();
+import { useState, useEffect, createContext, useContext } from "react";
+import { supabase } from "../../../api/src/SupabaseClient";
 import api from "../config/AxiosAdapter";
-// eslint-disable-next-line react/prop-types
-export const AuthContextProvider = ({ children }) => {
-  const [user, setUser] = useState([]);
-  const [sessionUser, setSessionUser] = useState([]);
-  const [errors, setErrors] = useState("");
+import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
+
+const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
+  const currentPath = window.location.pathname;
+  const [user, setUser] = useState(null);
+  const [session, setSession] = useState(null);
+  const [userRole, setUserRole] = useState(false);
+  const [loading, setLoading] = useState(true); // Añadido estado de loading
 
-  /**
-   * purpose: Sigin a new user
-   * @param {string} provider
-   * @param {object} credentials
-   * @returns {object}
-   */
-  async function signIn(provider) {
+  const signIn = async (provider) => {
     try {
-      await api.post("/auth/login", { provider });
-      // Supabase redirigirá automáticamente al usuario al proveedor de autenticación
+      const { data } = await api.get(`/auth/login?provider=${provider}`);
+      window.location.href = data;
     } catch (error) {
-      console.error(error);
-      throw new Error("Error al iniciar sesión con el proveedor");
-    }
-  }
-
-  /**
-   * Function to logout
-   */
-  async function signOut() {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        throw new Error("Ha ocurrido un error al cerrar sesión");
-      }
-      localStorage.clear();
-    } catch (error) {
-      setErrors(error.message);
-    }
-  }
-
-  /**
-   *
-   * purpose: Login in your account
-   * @param {string} email
-   * @param {string} password
-   * @returns
-   */
-  async function login(email, password) {
-    try {
-      // Obtener el usuario desde la base de datos por correo electrónico
-      const { data: user, error } = await supabase
-        .from("users")
-        .select("userPassHash") // Seleccionar el campo donde se almacena el hash de la contraseña
-        .eq("userEmail", email)
-        .single();
-
-      if (error) {
-        throw error;
-      }
-      // Comparar la contraseña ingresada con el hash almacenado
-      const isPasswordValid = bcrypt.compareSync(password, user.userPassHash);
-      if (!isPasswordValid) {
-        throw new Error("Usuario o contraseña incorrecta");
-      }
-      // Iniciar sesión con Supabase
-      const { user: authUser, error: authError } = await supabase.auth.signIn({
-        email,
-        password,
-      });
-      if (authError) {
-        throw authError;
-      }
-      return authUser;
-    } catch (error) {
+      console.error("SignIn Error:", error.message);
       throw new Error(error.message);
     }
-  }
-  useEffect(() => {
-    const handleAuthStateChange = async (event, session) => {
-      try {
-        const currentPath = window.location.pathname;
-        if (!session) {
-          if (currentPath === "/signin" || currentPath === "/login") {
-            navigate(currentPath);
-          } else {
-            navigate("/signin");
-          }
-        } else {
-          // Usar memoización para evitar solicitudes duplicadas
-          const cachedUser = localStorage.getItem("userRole");
-          let userRole;
+  };
 
-          if (cachedUser) {
-            userRole = JSON.parse(cachedUser);
+  const checkAuthorization = async (id) => {
+    try {
+      const response = await api.get(`/get/userRole?id=${id}`);
+      localStorage.setItem("userRole", response.data.data.userRole);
+      return response.data.data.userRole;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    const setData = async () => {
+      try {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+        if (error) throw new Error(error.message);
+
+        setSession(session);
+        setUser(session?.user);
+
+        if (session?.user) {
+          const storedIsAuthorized = localStorage.getItem("userRole");
+
+          if (storedIsAuthorized !== null) {
+            setUserRole(storedIsAuthorized === "true");
           } else {
-            const { data, error } = await supabase
-              .from("users")
-              .select("userRole")
-              .eq("userEmail", session.user.email)
-              .single();
-            if (error) throw error;
-            userRole = data;
-            localStorage.setItem("userRole", JSON.stringify(userRole));
+            const userRole = await checkAuthorization(session.user.id);
+            setUserRole(userRole);
           }
-          const isAdmin = userRole && userRole.userRole === "admin";
-          setSessionUser(session);
-          localStorage.setItem("userId", session.user.id);
-          // Evitar solicitudes de upsert duplicadas
-          if (!localStorage.getItem("userInserted")) {
-            const { error: upsertError } = await supabase.from("users").upsert({
-              userName: session.user.user_metadata.nickname,
-              userEmail: session.user.email,
-              userRole: "user",
-            });
-            if (upsertError) throw upsertError;
-            localStorage.setItem("userInserted", "true");
-          }
-          setUser(session.user.user_metadata);
-          navigate(isAdmin ? "/signin" : "/signin");
         }
+
+        setLoading(false); // Set loading to false after data is set
       } catch (error) {
-        setErrors(error.message);
+        setLoading(false); // Set loading to false in case of error
+        throw new Error(error.message);
       }
     };
-    const { data: AuthListener, error } = supabase.auth.onAuthStateChange(
-      handleAuthStateChange
+
+    setData();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        try {
+          setSession(session);
+          setUser(session?.user);
+
+          if (session?.user) {
+            const storedIsAuthorized = localStorage.getItem("userRole");
+
+            if (storedIsAuthorized !== null) {
+              setUserRole(storedIsAuthorized === "true");
+            } else {
+              const userRole = await checkAuthorization(session.user.id);
+              setUserRole(userRole);
+            }
+          }
+
+          setLoading(false); // Set loading to false after auth state change
+        } catch (error) {
+          console.error("Error in onAuthStateChange listener:", error.message);
+          setLoading(false); // Set loading to false in case of error
+        }
+      }
     );
-    if (error) {
-      setErrors(error.message);
-    }
 
     return () => {
-      if (AuthListener && AuthListener.unsubscribe) {
-        AuthListener.unsubscribe();
-      }
+      listener?.subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [currentPath, navigate]);
+
+  const value = {
+    session,
+    user,
+    userRole,
+    signIn,
+    signOut: () => {
+      supabase.auth.signOut();
+      localStorage.removeItem("userRole"); // Limpiar localStorage al cerrar sesión
+    },
+  };
 
   return (
-    <AuthContext.Provider
-      value={{
-        signIn,
-        signOut,
-        login,
-        user,
-        sessionUser,
-        errors,
-      }}
-    >
-      {children}
+    <AuthContext.Provider value={value}>
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
 
-export const useUserAuth = () => {
+// Export the hook
+export const useAuth = () => {
   return useContext(AuthContext);
+};
+
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };

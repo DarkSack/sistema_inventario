@@ -9,10 +9,10 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { TwitchLogo, DiscordLogo, GoogleLogo } from "phosphor-react";
-import { useUserAuth } from "../../Context/AuthContext";
+import {useAuth} from "../../Context/AuthContext";
 
 export const LogInView = () => {
-  const { signIn } = useUserAuth();
+  const { signIn } = useAuth();
   const avatarData = [
     {
       icon: <TwitchLogo size={32} />,

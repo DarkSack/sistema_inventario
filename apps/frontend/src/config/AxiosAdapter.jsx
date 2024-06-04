@@ -19,7 +19,7 @@ const forageCache = setupCache({
   clearOnStale: true, // Eliminar elementos caducados
 });
 
-const server = import.meta.env.VITE_PROD_URL;
+const server = import.meta.env.VITE_LOCAL_URL;
 
 // Crear una instancia de Axios con caché
 const api = axios.create({
