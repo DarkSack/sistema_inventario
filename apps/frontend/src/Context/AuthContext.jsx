@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
   const currentPath = window.location.pathname;
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
-  const [userRole, setUserRole] = useState(false);
   const [loading, setLoading] = useState(true); // Añadido estado de loading
 
   const signIn = async (provider) => {
@@ -21,16 +20,6 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("SignIn Error:", error.message);
       throw new Error(error.message);
-    }
-  };
-
-  const checkAuthorization = async (id) => {
-    try {
-      const response = await api.get(`/get/userRole?id=${id}`);
-      localStorage.setItem("userRole", response.data.data.userRole);
-      return response.data.data.userRole;
-    } catch (error) {
-      return false;
     }
   };
 
@@ -45,18 +34,6 @@ export const AuthProvider = ({ children }) => {
 
         setSession(session);
         setUser(session?.user);
-
-        if (session?.user) {
-          const storedIsAuthorized = localStorage.getItem("userRole");
-
-          if (storedIsAuthorized !== null) {
-            setUserRole(storedIsAuthorized === "true");
-          } else {
-            const userRole = await checkAuthorization(session.user.id);
-            setUserRole(userRole);
-          }
-        }
-
         setLoading(false); // Set loading to false after data is set
       } catch (error) {
         setLoading(false); // Set loading to false in case of error
@@ -71,22 +48,13 @@ export const AuthProvider = ({ children }) => {
         try {
           setSession(session);
           setUser(session?.user);
-
-          if (session?.user) {
-            const storedIsAuthorized = localStorage.getItem("userRole");
-
-            if (storedIsAuthorized !== null) {
-              setUserRole(storedIsAuthorized === "true");
-            } else {
-              const userRole = await checkAuthorization(session.user.id);
-              setUserRole(userRole);
-            }
-          }
-
           setLoading(false); // Set loading to false after auth state change
         } catch (error) {
-          console.error("Error in onAuthStateChange listener:", error.message);
           setLoading(false); // Set loading to false in case of error
+          throw new Error(
+            "Error in onAuthStateChange listener:",
+            error.message
+          );
         }
       }
     );
@@ -99,11 +67,9 @@ export const AuthProvider = ({ children }) => {
   const value = {
     session,
     user,
-    userRole,
     signIn,
     signOut: () => {
       supabase.auth.signOut();
-      localStorage.removeItem("userRole"); // Limpiar localStorage al cerrar sesión
     },
   };
 

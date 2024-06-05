@@ -4,10 +4,10 @@ import { SignInView } from "../View/utils/SignIn";
 import { FormProvider } from "./FormContext";
 import { AdminBar } from "../View/Admin/AdminBar";
 import { TopBar } from "../View/Clients/TopBar";
+import { usePermissions } from "../Context/PermissionsContext";
 export const RouteNavigation = () => {
-  const userRole =  localStorage.getItem("userRole")
-  const authorizedRoles = [2, 3, 4, 5, "superadmin"];
-  const isAuthorized = authorizedRoles.includes(userRole);
+  const { hasPermission } = usePermissions();
+  const isAuthorized = hasPermission("admin_dashboard");
 
   return (
     <Routes>

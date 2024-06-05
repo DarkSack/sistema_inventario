@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import api from "../../config/AxiosAdapter";
 import Table from "../../Global/Table";
-import { useAuth } from "../../Context/AuthContext";
+// import { useAuth } from "../../Context/AuthContext";
 import { Pencil, Trash } from "phosphor-react";
 export const AdminProductsView = () => {
-  const { useToken, userRole } = useAuth();
+  // const { useToken, userRole } = useAuth();
   const [productData, setProductData] = useState([]);
   const [errors, setErrors] = useState("");
   const [selectedRows, setSelectedRowIds] = useState([]);
