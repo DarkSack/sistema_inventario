@@ -10,7 +10,7 @@ export const RouteNavigation = () => {
   const isAuthorized = hasPermission("admin_dashboard");
   return (
     <Routes>
-      <Route path="/" element={<LogInView />} />
+      <Route path="/login" element={<LogInView />} />
       <Route
         path="/signin"
         element={
@@ -19,7 +19,7 @@ export const RouteNavigation = () => {
           </FormProvider>
         }
       />
-      <Route path="/login" element={isAuthorized ? <AdminBar /> : <TopBar />} />
+      <Route path="/" element={isAuthorized ? <AdminBar /> : <TopBar />} />
     </Routes>
   );
 };
