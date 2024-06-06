@@ -1,3 +1,4 @@
+// src/App.jsx
 import "./App.css";
 import "@mantine/core/styles.css";
 import { AuthProvider, useAuth } from "./Context/AuthContext";
@@ -5,15 +6,25 @@ import { RouteNavigation } from "./Context/Routes";
 import { BrowserRouter as Router } from "react-router-dom";
 import { PermissionsProvider } from "./Context/PermissionsContext";
 
-function App() {
-  const { user } = useAuth();
+function AppContent() {
+  const { user, loading } = useAuth();
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <PermissionsProvider userId={user?.id}>
+      <RouteNavigation />
+    </PermissionsProvider>
+  );
+}
+
+function App() {
   return (
     <Router>
       <AuthProvider>
-        <PermissionsProvider userId={user?.id}>
-          <RouteNavigation />
-        </PermissionsProvider>
+        <AppContent />
       </AuthProvider>
     </Router>
   );

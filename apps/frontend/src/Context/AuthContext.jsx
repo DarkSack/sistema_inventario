@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const currentPath = window.location.pathname;
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true); // Añadido estado de loading
+  const [loading, setLoading] = useState(true);
 
   const signIn = async (provider) => {
     try {
@@ -34,9 +34,9 @@ export const AuthProvider = ({ children }) => {
 
         setSession(session);
         setUser(session?.user);
-        setLoading(false); // Set loading to false after data is set
+        setLoading(false);
       } catch (error) {
-        setLoading(false); // Set loading to false in case of error
+        setLoading(false);
         throw new Error(error.message);
       }
     };
@@ -48,9 +48,9 @@ export const AuthProvider = ({ children }) => {
         try {
           setSession(session);
           setUser(session?.user);
-          setLoading(false); // Set loading to false after auth state change
+          setLoading(false);
         } catch (error) {
-          setLoading(false); // Set loading to false in case of error
+          setLoading(false);
           throw new Error(
             "Error in onAuthStateChange listener:",
             error.message
@@ -67,9 +67,12 @@ export const AuthProvider = ({ children }) => {
   const value = {
     session,
     user,
+    loading,
     signIn,
     signOut: () => {
       supabase.auth.signOut();
+      setUser(null);
+      setSession(null);
     },
   };
 

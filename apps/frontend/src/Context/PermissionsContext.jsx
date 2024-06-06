@@ -1,18 +1,31 @@
-// src/context/PermissionsContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import api from "../config/AxiosAdapter";
 
 const PermissionsContext = createContext();
 
+/**
+ * Custom hook to use permissions context
+ * @returns {object} - Contains permissions array and hasPermission function
+ */
 export const usePermissions = () => {
   return useContext(PermissionsContext);
 };
 
+/**
+ * PermissionsProvider component
+ * @param {object} props - Component props
+ * @param {React.ReactNode} props.children - Child components
+ * @param {string} props.userId - User ID to fetch permissions for
+ * @returns {JSX.Element} - PermissionsContext provider
+ */
 export const PermissionsProvider = ({ children, userId }) => {
   const [permissions, setPermissions] = useState([]);
 
   useEffect(() => {
+    /**
+     * Fetch permissions from API and cache in localStorage
+     */
     const fetchPermissions = async () => {
       try {
         const cachedPermissions = localStorage.getItem(`permissions_${userId}`);
@@ -28,7 +41,7 @@ export const PermissionsProvider = ({ children, userId }) => {
           );
         }
       } catch (error) {
-        throw new Error("Error fetching permissions:", error?.message);
+        console.error("Error fetching permissions:", error?.message);
       }
     };
 
@@ -37,6 +50,11 @@ export const PermissionsProvider = ({ children, userId }) => {
     }
   }, [userId]);
 
+  /**
+   * Check if a user has a specific permission
+   * @param {string} permission - The permission to check
+   * @returns {boolean} - True if the user has the permission, false otherwise
+   */
   const hasPermission = (permission) => {
     return permissions.includes(permission);
   };
@@ -47,7 +65,8 @@ export const PermissionsProvider = ({ children, userId }) => {
     </PermissionsContext.Provider>
   );
 };
+
 PermissionsProvider.propTypes = {
-  children: PropTypes.node,
-  userId: PropTypes.string,
+  children: PropTypes.node.isRequired,
+  userId: PropTypes.string.isRequired,
 };
