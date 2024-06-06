@@ -10,13 +10,12 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { TwitchLogo, DiscordLogo, GoogleLogo } from "phosphor-react";
-import {useAuth} from "../../../Context/AuthContext";
+import { useAuth } from "../../../Context/AuthContext";
 import { useFormContext } from "../../../Context/FormContext";
 import PropTypes from "prop-types";
 
 export const CreateAccountView = (props) => {
   const { signIn } = useAuth();
-  const credentials = { email: "johanjafet@gmail.com", password: "Sack123" };
   const { updateFormData, formData } = useFormContext();
   const avatarData = [
     {
@@ -83,10 +82,7 @@ export const CreateAccountView = (props) => {
               key={form.key("terms")}
               {...form.getInputProps("terms", { type: "checkbox" })}
             />
-            <Button
-              className="mt-5 mb-5"
-              onClick={() => signIn("withPassword", credentials)}
-            >
+            <Button className="mt-5 mb-5" type="submit">
               Aceptar
             </Button>
           </form>
