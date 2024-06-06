@@ -52,10 +52,13 @@ export const PermissionsProvider = ({ children, userId }) => {
 
   /**
    * Check if a user has a specific permission
-   * @param {string} permission - The permission to check
+   * @param {string | string[]} permission - The permission to check
    * @returns {boolean} - True if the user has the permission, false otherwise
    */
   const hasPermission = (permission) => {
+    if (Array.isArray(permission)) {
+      return permission.some((perm) => perm.includes(permission));
+    }
     return permissions.includes(permission);
   };
 
