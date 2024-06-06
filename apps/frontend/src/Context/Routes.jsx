@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { LogInView } from "../View/utils/LogIn";
-import { SignInView } from "../View/utils/SignIn";
+import { SignUpView } from "../View/utils/SignUp";
 import { AdminBar } from "../View/Admin/AdminBar";
 import { TopBar } from "../View/Clients/TopBar";
 import { usePermissions } from "../Context/PermissionsContext";
@@ -10,16 +10,16 @@ export const RouteNavigation = () => {
   const isAuthorized = hasPermission("admin_dashboard");
   return (
     <Routes>
-      <Route path="/login" element={<LogInView />} />
+      <Route path="/" element={<LogInView />} />
       <Route
         path="/signin"
         element={
           <FormProvider>
-            <SignInView />{" "}
+            <SignUpView />
           </FormProvider>
         }
       />
-      <Route path="/" element={isAuthorized ? <AdminBar /> : <TopBar />} />
+      <Route path="/login" element={isAuthorized ? <AdminBar /> : <TopBar />} />
     </Routes>
   );
 };

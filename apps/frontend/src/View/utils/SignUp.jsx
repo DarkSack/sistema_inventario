@@ -9,14 +9,11 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { TwitchLogo, DiscordLogo, GoogleLogo } from "phosphor-react";
-import { useAuth } from "../../../Context/AuthContext";
-import { useFormContext } from "../../../Context/FormContext";
-import PropTypes from "prop-types";
+import { TwitchLogo, DiscordLogo } from "phosphor-react";
+import { useAuth } from "../../Context/AuthContext";
 
-export const CreateAccountView = (props) => {
+export const SignUpView = () => {
   const { signIn } = useAuth();
-  const { updateFormData, formData } = useFormContext();
   const avatarData = [
     {
       icon: <TwitchLogo size={32} />,
@@ -25,10 +22,6 @@ export const CreateAccountView = (props) => {
     {
       icon: <DiscordLogo size={32} />,
       onClick: () => signIn("discord"),
-    },
-    {
-      icon: <GoogleLogo size={32} />,
-      onClick: () => signIn("google"),
     },
   ];
 
@@ -52,9 +45,15 @@ export const CreateAccountView = (props) => {
   });
 
   const handleSubmit = (values) => {
-    updateFormData("step1", values);
-    props.nextStep();
+    const email = values.user.email;
+    const password = values.user.password;
+    const credentials = {
+      email,
+      password,
+    };
+    signIn("WithCredentials", credentials);
   };
+
   return (
     <Grid className="mt-20">
       <Grid.Col span={12}>
@@ -63,7 +62,6 @@ export const CreateAccountView = (props) => {
             <TextInput
               label="Ingresa tu correo electronico"
               placeholder="Ingresa tu correo electronico"
-              value={formData?.step1?.user?.email}
               key={form.key("user.email")}
               {...form.getInputProps("user.email")}
             />
@@ -71,14 +69,12 @@ export const CreateAccountView = (props) => {
               label="Ingresa una contraseña segura"
               placeholder="Ingresa una contraseña segura"
               mt="md"
-              value={formData?.step1?.user?.password}
               key={form.key("user.password")}
               {...form.getInputProps("user.password")}
             />
             <Checkbox
               label="Acepto términos y condiciones"
               mt="sm"
-              value={formData?.step1?.user?.terms}
               key={form.key("terms")}
               {...form.getInputProps("terms", { type: "checkbox" })}
             />
@@ -102,8 +98,4 @@ export const CreateAccountView = (props) => {
       </Box>
     </Grid>
   );
-};
-CreateAccountView.propTypes = {
-  nextStep: PropTypes.func,
-  prevStep: PropTypes.func,
 };

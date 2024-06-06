@@ -13,13 +13,46 @@ export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const signIn = async (provider) => {
+  /**
+   * @param {string} provider
+   * @param {object} credentials
+   * @returns {object}
+   */
+  const signIn = async (provider, credentials) => {
     try {
-      const { data } = await api.get(`/auth/login?provider=${provider}`);
-      window.location.href = data;
+      if (provider === "WithCredentials") {
+        const { data: credentialsData, error } = await supabase.auth.signUp({
+          email: credentials.email,
+          password: credentials.password,
+        });
+        if (error) throw new Error(error.message);
+        return credentialsData;
+      } else {
+        const { data } = await api.get(`/auth/login?provider=${provider}`);
+        window.location.href = data;
+      }
     } catch (error) {
-      console.error("SignIn Error:", error.message);
-      throw new Error(error.message);
+      throw new Error(`Error during sign in: ${error.message}`);
+    }
+  };
+
+  /**
+   * @param {object} credentials
+   * @returns {object}
+   */
+  const login = async (credentials) => {
+    try {
+      const { email, password } = credentials;
+      const { session, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw new Error(error.message);
+      setSession(session);
+      setUser(session.user);
+      return session;
+    } catch (error) {
+      throw new Error(`Error during login: ${error.message}`);
     }
   };
 
@@ -69,6 +102,7 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     signIn,
+    login,
     signOut: () => {
       supabase.auth.signOut();
       setUser(null);
