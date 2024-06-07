@@ -4,25 +4,15 @@ import {
   Checkbox,
   TextInput,
   Divider,
-  Avatar,
   Button,
+  PasswordInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { TwitchLogo, DiscordLogo } from "phosphor-react";
 import { useAuth } from "../../Context/AuthContext";
 
 export const LogInView = () => {
-  const { signIn, login } = useAuth();
-  const avatarData = [
-    {
-      icon: <TwitchLogo size={32} />,
-      onClick: () => signIn("twitch"),
-    },
-    {
-      icon: <DiscordLogo size={32} />,
-      onClick: () => signIn("discord"),
-    },
-  ];
+  const { login } = useAuth();
+
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -62,7 +52,7 @@ export const LogInView = () => {
               key={form.key("user.email")}
               {...form.getInputProps("user.email")}
             />
-            <TextInput
+            <PasswordInput
               label="Ingresa una contraseña segura"
               placeholder="Ingresa una contraseña segura"
               mt="md"
@@ -82,17 +72,6 @@ export const LogInView = () => {
           <Divider size={"xl"} color="cyan" label="Otras opciones" />
         </Box>
       </Grid.Col>
-      <Box className="flex m-auto gap-10" maw={340} mx="auto">
-        {avatarData.map((avatar, index) => (
-          <Avatar
-            key={index}
-            onClick={avatar.onClick}
-            style={{ cursor: "pointer" }}
-          >
-            {avatar.icon}
-          </Avatar>
-        ))}
-      </Box>
     </Grid>
   );
 };

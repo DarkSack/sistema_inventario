@@ -21,7 +21,6 @@ export const usePermissions = () => {
  */
 export const PermissionsProvider = ({ children, userId }) => {
   const [permissions, setPermissions] = useState([]);
-
   useEffect(() => {
     /**
      * Fetch permissions from API and cache in localStorage

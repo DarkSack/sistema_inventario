@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
+
   /**
    * @param {string} provider
    * @param {object} credentials
@@ -21,15 +22,16 @@ export const AuthProvider = ({ children }) => {
   const signIn = async (provider, credentials) => {
     try {
       if (provider === "WithCredentials") {
-        const { data: credentialsData, error } = await supabase.auth.signUp({
-          email: credentials.email,
-          password: credentials.password,
+        // Solicitar autenticación con credenciales
+        const response = await api.post("/auth/login", {
+          provider,
+          credentials,
         });
-        if (error) throw new Error(error.message);
-        return credentialsData;
+        return response.data;
       } else {
-        const { data } = await api.get(`/auth/login?provider=${provider}`);
-        window.location.href = data;
+        // Solicitar autenticación con un proveedor
+        const response = await api.post("/auth/login", { provider });
+        window.location.href = response.data.url; // Redirigir a la URL de autenticación del proveedor
       }
     } catch (error) {
       throw new Error(`Error during sign in: ${error.message}`);
@@ -96,6 +98,16 @@ export const AuthProvider = ({ children }) => {
       listener?.subscription.unsubscribe();
     };
   }, [currentPath, navigate]);
+
+  useEffect(() => {
+    if (!loading) {
+      if (session) {
+        navigate("/"); // Redirige a la página de inicio si hay sesión
+      } else {
+        navigate("/signin"); // Redirige a la página de inicio de sesión si no hay sesión
+      }
+    }
+  }, [loading, session, navigate]);
 
   const value = {
     session,

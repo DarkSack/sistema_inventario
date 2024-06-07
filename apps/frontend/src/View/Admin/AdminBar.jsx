@@ -3,6 +3,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import { AdminProductsView } from "../Admin/Products";
 import { LogOutView } from "./LogoutView";
 import { usePermissions } from "../../Context/PermissionsContext";
+import { CategoriesView } from "../Clients/Categories";
 export const AdminBar = () => {
   const { hasPermission } = usePermissions();
   const isAuthorized = hasPermission("create_admins");
@@ -15,8 +16,8 @@ export const AdminBar = () => {
       <Grid.Col span={12}>
         <Tabs variant="pills" orientation={isMobile} defaultValue="Home">
           <Tabs.List grow>
-            <Tabs.Tab value="Home">Home</Tabs.Tab>
-            <Tabs.Tab value="MyShopping">My Shopping</Tabs.Tab>
+            <Tabs.Tab value="ProductsView">Products View</Tabs.Tab>
+            <Tabs.Tab value="Categories">Categories</Tabs.Tab>
             <Tabs.Tab value="MyAccount">My Account</Tabs.Tab>
             <Tabs.Tab value="Help">Help</Tabs.Tab>
             <Tabs.Tab value="Categories">Categories</Tabs.Tab>
@@ -27,7 +28,8 @@ export const AdminBar = () => {
               <Text>Logout</Text>
             </Tabs.Tab>
           </Tabs.List>
-          <Tabs.Panel value="Home">{AdminProductsView()}</Tabs.Panel>
+          <Tabs.Panel value="ProductsView">{AdminProductsView()}</Tabs.Panel>
+          <Tabs.Panel value="Categories">{CategoriesView()}</Tabs.Panel>
           <Tabs.Panel value="LogOut">{LogOutView()}</Tabs.Panel>
         </Tabs>
       </Grid.Col>
