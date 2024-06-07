@@ -3,7 +3,7 @@ import Cors from "cors";
 // Inicializando la instancia de cors
 const cors = Cors({
   methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
-  origin: ["http://localhost:3000", "https://localhost:5173"]
+  origin: ["http://localhost:3000", "https://localhost:5173", "https://sistema-inventario-api.vercel.app/"]
 });
 
 // Helper function para ejecutar el middleware de cors
