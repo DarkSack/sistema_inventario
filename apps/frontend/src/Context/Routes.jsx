@@ -1,10 +1,10 @@
 import { Route, Routes } from "react-router-dom";
-import { LogInView } from "../View/utils/LogIn";
+import { LogInView } from "../View/auth/LogIn";
 import { AdminBar } from "../View/Admin/AdminBar";
 import { TopBar } from "../View/Clients/TopBar";
 import { usePermissions } from "../Context/PermissionsContext";
 import { FormProvider } from "./FormContext";
-import { SignInView } from "../View/utils/SingIn";
+import { SignInView } from "../View/auth/SingIn";
 export const RouteNavigation = () => {
   const { hasPermission } = usePermissions();
   const isAuthorized = hasPermission("admin_dashboard");
