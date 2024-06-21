@@ -3,7 +3,10 @@ import Cors from "cors";
 // Inicializando la instancia de cors
 const cors = Cors({
   methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
-  origin: ["http://localhost:3000", "https://localhost:5173", "https://sistema-inventario-api.vercel.app/"]
+  origin:
+    process.env.NODE_ENV === "production"
+      ? "https://sackitoinventoryfrontend.vercel.app/"
+      : "http://localhost:3000",
 });
 
 // Helper function para ejecutar el middleware de cors

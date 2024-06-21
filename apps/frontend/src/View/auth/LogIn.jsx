@@ -11,7 +11,7 @@ import { useForm } from "@mantine/form";
 import { useAuth } from "../../Context/AuthContext";
 
 export const LogInView = () => {
-  const { login } = useAuth();
+  const { signIn } = useAuth();
 
   const form = useForm({
     mode: "uncontrolled",
@@ -35,10 +35,10 @@ export const LogInView = () => {
     const email = values.user.email;
     const password = values.user.password;
     const credentials = {
-      email,
-      password,
+      userEmail: email,
+      userPassword: password,
     };
-    login(credentials);
+    signIn(credentials);
   };
 
   return (

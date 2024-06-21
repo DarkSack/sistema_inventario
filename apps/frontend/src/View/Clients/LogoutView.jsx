@@ -1,9 +1,9 @@
 import { Empty } from "keep-react";
 import { Center, Grid, Image } from "@mantine/core";
 import { Button } from "@mantine/core";
-import {useAuth} from "../../Context/AuthContext"
+import { useAuth } from "../../Context/AuthContext";
 export const LogOutView = () => {
-  const { signOut } = useAuth();
+  const { logout } = useAuth();
   return (
     <Grid grow>
       <Center>
@@ -19,7 +19,7 @@ export const LogOutView = () => {
             Te echaremos mucho de menos... Vuelve pronto
           </Empty.Description>
           <Grid.Col span={12}>
-            <Button onClick={signOut} variant="outline">
+            <Button onClick={logout} variant="outline">
               Cerrar Sesión
             </Button>
           </Grid.Col>

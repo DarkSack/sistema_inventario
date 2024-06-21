@@ -1,5 +1,10 @@
-import { useState, useEffect, createContext, useContext } from "react";
-import { supabase } from "../../../api/src/SupabaseClient";
+import {
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+  useCallback,
+} from "react";
 import api from "../config/AxiosAdapter";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
@@ -8,118 +13,77 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
-  const currentPath = window.location.pathname;
   const [user, setUser] = useState(null);
-  const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
-
   /**
-   * @param {string} provider
-   * @param {object} credentials
-   * @returns {object}
+   * Iniciar sesión
+   * @param {object} credentials - Credenciales de inicio de sesión
+   * @returns {Promise<void>}
    */
-  const signIn = async (provider, credentials) => {
+  const signIn = async (credentials) => {
     try {
-      if (provider === "WithCredentials") {
-        // Solicitar autenticación con credenciales
-        const response = await api.post("/auth/login", {
-          provider,
-          credentials,
-        });
-        return response.data;
-      } else {
-        // Solicitar autenticación con un proveedor
-        const response = await api.post("/auth/login", { provider });
-        window.location.href = response.data.url; // Redirigir a la URL de autenticación del proveedor
-      }
+      const response = await api.post("/login", credentials, {
+        withCredentials: true,
+      });
+      setUser(response.data.user);
+      return response.data.user;
     } catch (error) {
       throw new Error(`Error during sign in: ${error.message}`);
     }
   };
+  console.log(user);
+  /**
+   * Cerrar sesión
+   * @returns {Promise<void>}
+   */
+  const logout = useCallback(async () => {
+    try {
+      await api.post("/auth/logout");
+      setUser(null);
+      navigate("/signin");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  }, [navigate]);
 
   /**
    * @param {object} credentials
    * @returns {object}
    */
-  const login = async (credentials) => {
-    try {
-      const { email, password } = credentials;
-      const { session, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw new Error(error.message);
-      setSession(session);
-      setUser(session.user);
-      return session;
-    } catch (error) {
-      throw new Error(`Error during login: ${error.message}`);
-    }
-  };
+  const login = async () => {};
 
   useEffect(() => {
-    const setData = async () => {
+    const fetchProfile = async () => {
       try {
-        const {
-          data: { session },
-          error,
-        } = await supabase.auth.getSession();
-        if (error) throw new Error(error.message);
-
-        setSession(session);
-        setUser(session?.user);
-        setLoading(false);
+        const res = await api.get("/profile");
+        setUser(res.data.user);
       } catch (error) {
+        throw new Error(error);
+      } finally {
         setLoading(false);
-        throw new Error(error.message);
       }
     };
 
-    setData();
-
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        try {
-          setSession(session);
-          setUser(session?.user);
-          setLoading(false);
-        } catch (error) {
-          setLoading(false);
-          throw new Error(
-            "Error in onAuthStateChange listener:",
-            error.message
-          );
-        }
-      }
-    );
-
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
-  }, [currentPath, navigate]);
+    fetchProfile();
+  }, []);
 
   useEffect(() => {
     if (!loading) {
-      if (session) {
+      if (user && window.location.pathname === "/signin") {
         navigate("/"); // Redirige a la página de inicio si hay sesión
-      } else {
+      } else if (!user && window.location.pathname !== "/signin") {
         navigate("/signin"); // Redirige a la página de inicio de sesión si no hay sesión
       }
     }
-  }, [loading, session, navigate]);
+  }, [loading, user, navigate]);
 
   const value = {
-    session,
     user,
     loading,
     signIn,
     login,
-    signOut: () => {
-      supabase.auth.signOut();
-      setUser(null);
-      setSession(null);
-    },
+    logout,
   };
 
   return (
