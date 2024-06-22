@@ -2,7 +2,7 @@
   "name": "sistema_inventario",
   "version": "1.0.0",
   "description": "",
-  "packageManager": "npm@8.1.0",
+  "packageManager": "npm@10.8.0",
   "main": "index.js",
   "scripts": {
     "dev": "turbo dev",
