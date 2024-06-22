@@ -3,9 +3,10 @@ import Users from "../../models/Users";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { serialize } from "cookie";
-import { allowCors } from "./cors";
+import { runCorsMiddleware } from "../../utils/cors";
 
 export default async function handler(req, res) {
+  await runCorsMiddleware(req, res);
   await dbConnect();
   const { method } = req;
   if (method === "POST") return loginUser(req, res);
@@ -29,7 +30,9 @@ const loginUser = async (req, res) => {
     const user = await Users.findOne({ userEmail });
 
     if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res
+        .status(401)
+        .json({ success: false, error: "Invalid credentials" });
     }
 
     // Verificar la contraseña
@@ -39,7 +42,9 @@ const loginUser = async (req, res) => {
     );
 
     if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res
+        .status(401)
+        .json({ success: false, error: "Invalid credentials" });
     }
 
     // Excluir la contraseña del objeto de usuario
@@ -55,12 +60,12 @@ const loginUser = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7, // 1 semana
-      sameSite: "lax",
+      sameSite: "none",
       path: "/",
       domain:
         process.env.NODE_ENV === "production"
-          ? "https://sackitoinventoryfrontend.vercel.app/"
-          : "localhost",
+          ? "https://sackitoinventoryfrontend.vercel.app"
+          : "http:localhost:5173",
     });
 
     // Establecer la cookie en la respuesta
@@ -69,7 +74,11 @@ const loginUser = async (req, res) => {
     // Enviar respuesta exitosa con datos del usuario
     res
       .status(200)
-      .json({ message: "Logged in successfully", user: userWithoutPassword });
+      .json({
+        success: true,
+        message: "Logged in successfully",
+        user: userWithoutPassword,
+      });
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }

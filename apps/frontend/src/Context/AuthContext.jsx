@@ -8,13 +8,16 @@ import {
 import api from "../config/AxiosAdapter";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    const userCookie = Cookies.get("user");
+    return userCookie ? JSON.parse(userCookie) : null;
+  });
 
   /**
    * Iniciar sesión
@@ -23,16 +26,15 @@ export const AuthProvider = ({ children }) => {
    */
   const signIn = async (credentials) => {
     try {
-      const response = await api.post("/login", credentials, {
-        withCredentials: true,
-      });
+      const response = await api.post("/login", credentials, {});
       setUser(response.data.user);
+      Cookies.set("user", JSON.stringify(response.data.user), { expires: 7 });
       return response.data.user;
     } catch (error) {
       throw new Error(`Error during sign in: ${error.message}`);
     }
   };
-  console.log(user);
+
   /**
    * Cerrar sesión
    * @returns {Promise<void>}
@@ -41,6 +43,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await api.post("/auth/logout");
       setUser(null);
+      Cookies.remove("user");
       navigate("/signin");
     } catch (error) {
       console.error("Error during logout:", error);
@@ -48,49 +51,23 @@ export const AuthProvider = ({ children }) => {
   }, [navigate]);
 
   /**
-   * @param {object} credentials
-   * @returns {object}
+   * Handle redirects based on user state
    */
-  const login = async () => {};
-
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await api.get("/profile");
-        setUser(res.data.user);
-      } catch (error) {
-        throw new Error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-  useEffect(() => {
-    if (!loading) {
-      if (user && window.location.pathname === "/signin") {
-        navigate("/"); // Redirige a la página de inicio si hay sesión
-      } else if (!user && window.location.pathname !== "/signin") {
-        navigate("/signin"); // Redirige a la página de inicio de sesión si no hay sesión
-      }
+    if (user && window.location.pathname === "/signin") {
+      navigate("/"); // Redirige a la página de inicio si hay sesión
+    } else if (!user && window.location.pathname !== "/signin") {
+      navigate("/signin"); // Redirige a la página de inicio de sesión si no hay sesión
     }
-  }, [loading, user, navigate]);
+  }, [user, navigate]);
 
   const value = {
     user,
-    loading,
     signIn,
-    login,
     logout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 // Export the hook

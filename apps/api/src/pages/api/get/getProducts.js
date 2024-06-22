@@ -1,7 +1,7 @@
 import { supabase } from "../../../SupabaseClient";
-import { allowCors } from "../cors";
+
 //Get products
-async function handler(req, res) {
+export default async function handler(req, res) {
   const { q } = req.query;
   try {
     // Realiza la consulta a la tabla de productos
@@ -41,4 +41,3 @@ async function handler(req, res) {
     return res.status(500).json({ error: error.message });
   }
 }
-export default allowCors(handler);

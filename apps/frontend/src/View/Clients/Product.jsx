@@ -26,17 +26,17 @@ export const Product = () => {
   useEffect(() => {
     const fetchProductData = async () => {
       try {
-        const res = await api.get("/get/getProducts", {
+        const res = await api.get("/product", {
           params: { q: debouncedSearchTerm },
         });
-        setProductData(res.data);
+        setProductData(res.data.data);
       } catch (err) {
         setErrors(err);
       }
     };
     fetchProductData();
   }, [debouncedSearchTerm]);
-
+console.log(productData);
   useEffect(() => {
     const err = errors.messsage;
     if (err) {

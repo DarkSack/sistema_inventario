@@ -7,11 +7,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { PermissionsProvider } from "./Context/PermissionsContext";
 
 function AppContent() {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const { user } = useAuth();
 
   return (
     <PermissionsProvider userId={user?.id}>

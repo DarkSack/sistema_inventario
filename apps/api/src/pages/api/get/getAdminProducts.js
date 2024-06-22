@@ -1,15 +1,12 @@
 import { supabase } from "../../../SupabaseClient";
-import { allowCors } from "../cors";
 
 //Get products
-async function handler(req, res) {
+export default async function handler(req, res) {
   const { q } = req.query;
   try {
     // Realiza la consulta a la tabla de productos
-    const { data: products, error } = await supabase
-      .from("productos")
-      .select(
-        `productId,
+    const { data: products, error } = await supabase.from("productos").select(
+      `productId,
          productName,
          productDescription,
          productPrice,
@@ -21,7 +18,7 @@ async function handler(req, res) {
           providerName
          )
          `
-      );
+    );
 
     if (error) {
       throw new Error(error.message);
@@ -69,5 +66,3 @@ async function handler(req, res) {
     return res.status(500).json({ error: error.message });
   }
 }
-
-export default allowCors(handler);

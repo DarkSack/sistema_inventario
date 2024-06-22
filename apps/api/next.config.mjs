@@ -14,12 +14,12 @@ const nextConfig = {
             key: "Access-Control-Allow-Origin",
             value:
               process.env.NODE_ENV === "production"
-                ? "https://sackitoinventoryfrontend.vercel.app/"
-                : "http://localhost:3000",
+                ? "https://sackitoinventoryfrontend.vercel.app"
+                : "http://localhost:5173",
           },
           {
             key: "Access-Control-Allow-Methods",
-            value: "GET,DELETE,PATCH,POST,PUT",
+            value: "GET,DELETE,PATCH,POST,PUT,OPTIONS",
           },
           {
             key: "Access-Control-Allow-Headers",
